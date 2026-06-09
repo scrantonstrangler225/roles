@@ -1,0 +1,10 @@
+[DEFAULT]
+bantime = {{ fail2ban_bantime }}
+findtime = {{ fail2ban_findtime }}
+maxretry = {{ fail2ban_maxretry }}
+
+# don't lock yourself out during dev
+ignoreip = 127.0.0.1/8 10.0.0.0/24
+
+[sshd]
+enabled = true

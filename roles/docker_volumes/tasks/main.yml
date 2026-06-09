@@ -1,0 +1,8 @@
+---
+- name: Ensure Docker volumes exist
+  community.docker.docker_volume:
+    name: "{{ item.name | default(item) }}"
+    driver: "{{ item.driver | default('local') }}"
+    driver_opts: "{{ item.driver_opts | default(omit) }}"
+    state: present
+  loop: "{{ docker_volumes }}"

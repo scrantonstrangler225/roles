@@ -1,0 +1,10 @@
+---
+# roles/common/defaults/main.yml
+common_packages:
+  - curl
+  - git
+  - vim
+  - htop
+  - unzip
+  - wget
+  - lsb-release
