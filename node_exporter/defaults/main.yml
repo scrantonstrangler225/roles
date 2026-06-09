@@ -1,0 +1,15 @@
+---
+node_exporter_container_name: node_exporter
+
+node_exporter_image: prom/node-exporter:latest
+
+node_exporter_networks:
+  - name: monitoring
+
+node_exporter_ports:
+  - "9100:9100"
+
+node_exporter_volumes:
+  - "/proc:/host/proc:ro"
+  - "/sys:/host/sys:ro"
+  - "/:/rootfs:ro"
