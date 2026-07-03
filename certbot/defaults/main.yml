@@ -1,9 +1,0 @@
----
-certbot_email: ""
-
-certbot_domains: []
-
-certbot_webroot: "/var/lib/nginx/letsencrypt"
-
-certbot_renew_hour: "2"
-certbot_renew_minute: "30"
