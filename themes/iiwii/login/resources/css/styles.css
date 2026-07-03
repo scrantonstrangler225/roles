@@ -1,0 +1,153 @@
+/* ---------- Full page background ---------- */
+
+body,
+.login-pf-page {
+    background: url("../img/sport_background.jpeg") center center / cover no-repeat fixed;
+    min-height: 100vh;
+}
+
+/* ---------- Layout: stack header ABOVE card ---------- */
+
+.login-pf-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+/* Dark overlay */
+.login-pf-page::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 0;
+}
+
+/* ---------- Header (logo area) ---------- */
+
+#kc-header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+    z-index: 2;
+}
+
+#kc-header-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    height: 80px;
+}
+
+#kc-header-wrapper::before {
+    content: "";
+    width: 50px;
+    height: 50px;
+    background: url("../img/nsm_2.png") center no-repeat;
+    background-size: contain;
+}
+
+#kc-header-wrapper::after {
+    content: "New Skool Media";
+    font-size: 28px;
+    font-weight: 700;
+    color: #ff2d8f;
+    letter-spacing: 0.5px;
+}
+
+/* Hide default Keycloak text */
+.kc-logo-text {
+    display: none !important;
+}
+
+/* ---------- Login Card ---------- */
+
+.card-pf {
+    position: relative;
+    z-index: 2;
+
+    width: 100%;
+    max-width: 430px;
+
+    border-radius: 20px;
+    border: none;
+
+    background: rgba(25, 25, 25, 0.90);
+    backdrop-filter: blur(10px);
+
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+/* ---------- Buttons ---------- */
+
+.pf-v5-c-button {
+    border-radius: 12px;
+    background: #ff2d8f;
+    border: none;
+}
+
+.pf-v5-c-button:hover {
+    background: #ff4aa3;
+}
+
+/* ---------- Inputs ---------- */
+
+.pf-v5-c-form-control {
+    border-radius: 10px;
+}
+
+/* ---------- Links ---------- */
+
+a {
+    color: #ff2d8f;
+}
+
+a:hover {
+    color: #ff62b5;
+}
+
+/* ---------- Titles ---------- */
+
+#kc-page-title {
+    color: white;
+    font-weight: 700;
+}
+
+/* ---------- Labels ---------- */
+
+label {
+    color: white;
+}
+
+/* ---------- Footer ---------- */
+
+#kc-info {
+    color: white;
+}
+
+
+/* ---------- Forms ---------- */
+
+.kc-form,
+#kc-form-login,
+#kc-register-form {
+    width: 100%;
+}
+
+#kc-page-title {
+    font-size: 0;
+}
+
+#kc-page-title::after {
+    content: "Experience New Skool";
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+}

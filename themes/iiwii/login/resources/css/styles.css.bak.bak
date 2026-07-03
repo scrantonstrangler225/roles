@@ -1,0 +1,101 @@
+/* ---------- Full page background ---------- */
+
+body,
+.login-pf-page {
+    background: url("../img/sport_background.jpeg") center center / cover no-repeat fixed;
+    min-height: 100vh;
+}
+
+/* Dark overlay so the form is readable */
+
+.login-pf-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.login-pf-page::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 0;
+}
+
+/* ---------- Login Card ---------- */
+
+.card-pf {
+    position: relative;
+    z-index: 1;
+
+    max-width: 430px;
+
+    border-radius: 20px;
+    border: none;
+
+    background: rgba(25, 25, 25, .90);
+
+    backdrop-filter: blur(10px);
+
+    box-shadow: 0 20px 50px rgba(0,0,0,.5);
+}
+
+/* ---------- Logo ---------- */
+
+#kc-header-wrapper {
+
+    background: url("../img/nsm_2.png") center no-repeat;
+
+    background-size: 180px;
+
+    height: 120px;
+
+    text-indent: -9999px;
+}
+
+/* ---------- Buttons ---------- */
+
+.pf-v5-c-button {
+    border-radius: 12px;
+    background: #ff2d8f;
+    border: none;
+}
+
+.pf-v5-c-button:hover {
+    background: #ff4aa3;
+}
+
+/* ---------- Inputs ---------- */
+
+.pf-v5-c-form-control {
+    border-radius: 10px;
+}
+
+/* ---------- Links ---------- */
+
+a {
+    color: #ff2d8f;
+}
+
+a:hover {
+    color: #ff62b5;
+}
+
+/* ---------- Titles ---------- */
+
+#kc-page-title {
+    color: white;
+    font-weight: 700;
+}
+
+/* ---------- Labels ---------- */
+
+label {
+    color: white;
+}
+
+/* ---------- Footer ---------- */
+
+#kc-info {
+  }
