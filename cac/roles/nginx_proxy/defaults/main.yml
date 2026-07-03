@@ -1,0 +1,2 @@
+nginx_proxy_services: []
+nginx_proxy_sites_path: "/var/lib/nginx/proxy_sites"

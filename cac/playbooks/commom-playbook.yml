@@ -1,0 +1,24 @@
+- hosts: servers
+  become: true
+  roles:
+    - common
+    - users
+      #- ssh_hardening
+    - firewall
+    - fail2ban
+    - docker
+    - docker_networks
+    - docker_volumes
+      #- docker_remote_api # for concourse CI
+    - nginx
+    - nginx_sites
+    - nginx_proxy
+      #- certbot  # run after DNS points to server + ACME challenge serving
+    - monitoring/prometheus
+    - monitoring/grafana
+    - node_exporter
+    - cadvisor
+      #- mattermost
+      #- countly
+      #- keycloak
+      #- backup

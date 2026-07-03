@@ -1,0 +1,10 @@
+---
+# List of Docker volumes to ensure exist
+docker_volumes: []
+
+  #- portainer_data
+  #- grafana_data
+  #- prometheus_data
+  #- mattermost_data
+  #- mongodb_data
+  #- countly_data

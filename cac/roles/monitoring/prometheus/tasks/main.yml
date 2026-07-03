@@ -1,0 +1,23 @@
+---
+- name: Ensure Prometheus config dir exists
+  ansible.builtin.file:
+    path: "{{ prometheus_config_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Build Prometheus scrape config
+  ansible.builtin.template:
+    src: prometheus.yml.j2
+    dest: "{{ prometheus_config_dir }}/prometheus.yml"
+
+- name: Ensure Prometheus container is running
+  community.docker.docker_container:
+    name: "{{ prometheus_container_name }}"
+    image: "{{ prometheus_image }}"
+    state: started
+    restart_policy: unless-stopped
+    networks: "{{ prometheus_networks }}"
+    published_ports: "{{ prometheus_ports }}"
+    volumes:
+      - "{{ prometheus_config_dir }}:/etc/prometheus"
+      - "prometheus_data:/prometheus"

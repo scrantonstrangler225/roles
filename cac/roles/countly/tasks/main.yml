@@ -1,0 +1,13 @@
+---
+- name: Ensure Countly container is running
+  community.docker.docker_container:
+    name:"{{ countly_container_name }}"
+    image:"{{ countly_image }}"
+    state: started
+    restart_policy: unless-stopped
+
+    networks:"{{ countly_networks }}"
+
+    published_ports:"{{ countly_ports }}"
+
+    env:"{{ countly_env }}"

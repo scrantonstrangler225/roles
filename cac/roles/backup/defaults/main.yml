@@ -1,0 +1,18 @@
+---
+# Backup destination
+backup_dir: /var/backups
+
+# Backup schedule (cron style)
+backup_schedule:"0 2 * * *"# daily at 2 AM
+
+# What to backup (volumes, databases, configs)
+backup_volumes:
+  - grafana_data
+  - prometheus_data
+  - mattermost_data
+  - mongodb_data
+  - countly_data
+
+backup_configs:
+  - /etc/nginx/conf.d
+  - /etc/letsencrypt

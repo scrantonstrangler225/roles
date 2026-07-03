@@ -1,0 +1,19 @@
+---
+- name: Configure Docker daemon for remote access
+  template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+  when: docker_remote_api_enabled
+  notify: Restart Docker
+
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: true
+
+# Handlers
+- name: Restart Docker
+  service:
+    name: docker
+    state: restarted

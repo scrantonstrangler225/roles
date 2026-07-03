@@ -1,0 +1,17 @@
+---
+mattermost_container_name: mattermost
+
+# need to pin to a specific version
+mattermost_image: mattermost/mattermost-team-edition:latest
+
+mattermost_networks:
+  - name: backend
+
+mattermost_ports:
+  -"8065:8065"
+
+mattermost_volumes:
+  -"mattermost_data:/mattermost/data"
+
+mattermost_env:
+  MM_SERVICESETTINGS_SITEURL:"https://chat.example.com"

@@ -1,0 +1,10 @@
+---
+mongodb_container_name: mongodb
+
+mongodb_image: mongo:latest
+
+mongodb_networks:
+  - name: backend
+
+mongodb_volumes:
+  -"mongodb_data:/data/db"
