@@ -1,7 +1,0 @@
-grafana_container_name: grafana
-grafana_image: grafana/grafana:latest
-grafana_networks:
-  - name: monitoring
-grafana_ports:
-  - "3000:3000"
-grafana_data_dir: /var/lib/docker/volumes/grafana_data/_data
