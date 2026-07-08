@@ -1,0 +1,19 @@
+server {
+    listen {{ item.listen | default(80) }};
+    server_name {{ item.server_name }};
+
+    {% if item.root is defined %}
+    root {{ item.root }};
+    {% endif %}
+
+    {% for loc in item.locations %}
+    location {{ loc.path }} {
+        {{ loc.content | indent(8) }}
+    }
+    {% endfor %}
+
+    # add this for certbot
+    location /.well-known/acme-challenges/ {
+        root /var/www/letsencrypt;
+    }
+}

@@ -1,0 +1,60 @@
+---
+- name: Install Certbot packages
+  ansible.builtin.apt:
+    name:
+      - certbot
+      - python3-certbot-nginx
+    state: present
+    update_cache: true
+
+- name: Ensure ACME challenge directory exists
+  ansible.builtin.file:
+    path: "{{ certbot_webroot }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Obtain Let's Encrypt certificate
+  ansible.builtin.command:
+    cmd: >
+      certbot certonly
+      --webroot
+      --webroot-path {{ certbot_webroot }}
+      --email {{ certbot_email }}
+      --agree-tos
+      --non-interactive
+      {% if certbot_staging %}--test-cert{% endif %}
+      {% for domain in certbot_domains %}
+      -d {{ domain }}
+      {% endfor %}
+  args:
+    creates: "/etc/letsencrypt/live/{{ certbot_domains[0] }}/fullchain.pem"
+  when:
+    - certbot_domains | length > 0
+    - certbot_email | length > 0
+
+- name: Enable certbot timer
+  ansible.builtin.service:
+    name: certbot.timer
+    enabled: true
+    state: started
+  when: certbot_enable_timer
+
+- name: Ensure renewal deploy hook directory exists
+  ansible.builtin.file:
+    path: /etc/letsencrypt/renewal-hooks/deploy
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install nginx deploy hook
+  ansible.builtin.copy:
+    dest: /etc/letsencrypt/renewal-hooks/deploy/restart-nginx.sh
+    owner: root
+    group: root
+    mode: "0755"
+    content: |
+      #!/bin/sh
+      docker restart nginx >/dev/null 2>&1 || true

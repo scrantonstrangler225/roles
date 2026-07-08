@@ -1,0 +1,75 @@
+---
+- name: Create Keycloak data directory
+  ansible.builtin.file:
+    path: /opt/keycloak
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create Keycloak themes directory
+  ansible.builtin.file:
+    path: /opt/keycloak/themes
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+# may not need but including 
+#- name: Ensure Keycloak data directory exists
+#  ansible.builtin.file:
+#    path: /var/lib/docker/volumes/keycloak_data/_data
+#    state: directory
+#    owner: "1000"
+#    group: "1000"
+#    mode: "0755"
+
+- name: Copy Keycloak themes
+  ansible.builtin.copy:
+    src: themes/
+    dest: /opt/keycloak/themes/
+    owner: root
+    group: root
+    mode: preserve
+  notify: Restart Keycloak
+
+
+- name: Ensure Keycloak container is running
+  community.docker.docker_container:
+    name: "{{ keycloak_container_name }}"
+    image: "{{ keycloak_image }}"
+    state: started
+    restart_policy: unless-stopped
+
+    command:
+      - start
+
+    networks: "{{ keycloak_networks }}"
+
+    published_ports: "{{ keycloak_ports }}"
+
+    volumes: "{{ keycloak_volumes }}"
+
+    env: "{{ keycloak_env }}"
+
+      #security_opts:
+      #- no-new-privileges: true
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "curl -fs http://127.0.0.1:8080/health/ready || exit 1"
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+
+
+- name: Wait for Keycloak
+  ansible.builtin.uri:
+    url: http://127.0.0.1:8080/realms/master
+    status_code: 200
+  register: keycloak_ready
+  retries: 30
+  delay: 5
+  until: keycloak_ready.status == 200

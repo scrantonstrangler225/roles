@@ -1,0 +1,37 @@
+---
+postgres_container_name: postgres
+
+# Pin after testing
+postgres_image: postgres:17
+
+postgres_networks:
+  - name: backend
+
+postgres_ports:
+  - "5432:5432"
+
+postgres_data_dir: /var/lib/docker/volumes/postgres_data/_data
+
+  #postgres_env:
+  #POSTGRES_DB: mattermost
+  #POSTGRES_USER: mattermost
+  #POSTGRES_PASSWORD: password
+
+postgres_env:
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: password #"{{ vault_postgres_password }}"
+  POSTGRES_DB: postgres
+
+postgres_databases:
+  - name: mattermost
+    user: mattermost
+    password: password # "{{ vault_mattermost_db_password }}"
+
+  - name: keycloak
+    user: keycloak
+    password: password # "{{ vault_mattermost_db_password }}"
+
+  - name: countly
+    user: countly
+    password: password # "{{ vault_mattermost_db_password }}"
+

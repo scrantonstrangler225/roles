@@ -1,0 +1,18 @@
+---
+# Contact email for Let's Encrypt
+certbot_email: ""
+
+# Domain list (first domain becomes the primary certificate name)
+certbot_domains: []
+
+# Webroot used for ACME HTTP-01 challenges
+certbot_webroot: "/var/lib/nginx/letsencrypt"
+
+# Use Let's Encrypt staging environment (set false in production)
+certbot_staging: true
+
+# Enable automatic renewal
+certbot_enable_timer: true
+
+certbot_renew_hour: "2"
+certbot_renew_minute: "30"

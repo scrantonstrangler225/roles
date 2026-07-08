@@ -1,0 +1,90 @@
+#!/bin/bash
+
+set -euo pipefail
+
+DATE=$(date +%F)
+BACKUP_DIR="{{ backup_dir }}/$DATE"
+
+mkdir -p "$BACKUP_DIR"
+
+echo "Backing up Docker volumes..."
+
+{% for volume in backup_volumes %}
+docker run --rm \
+    -v {{ volume }}:/volume:ro \
+    -v "$BACKUP_DIR":/backup \
+    alpine \
+    tar czf "/backup/{{ volume }}.tar.gz" -C /volume .
+{% endfor %}
+
+echo "Backing up configs..."
+
+{% for cfg in backup_configs %}
+tar czf "$BACKUP_DIR/{{ cfg | basename }}.tar.gz" "{{ cfg }}"
+{% endfor %}
+
+{% if backup_postgres.enabled %}
+
+echo "Backing up PostgreSQL..."
+
+docker exec {{ backup_postgres.container }} \
+    pg_dumpall -U {{ backup_postgres.user }} \
+    > "$BACKUP_DIR/postgres.sql"
+
+gzip "$BACKUP_DIR/postgres.sql"
+
+{% endif %}
+
+{% if backup_mongodb.enabled %}
+
+echo "Backing up MongoDB..."
+
+docker exec {{ backup_mongodb.container }} \
+    mongodump \
+    --authenticationDatabase {{ backup_mongodb.auth_db }} \
+    -u {{ backup_mongodb.user }} \
+    -p {{ backup_mongodb.password }} \
+    --archive \
+    --gzip \
+    > "$BACKUP_DIR/mongodb.archive.gz"
+
+{% endif %}
+
+{% if backup_valkey.enabled %}
+
+echo "Saving Valkey..."
+
+docker exec {{ backup_valkey.container }} valkey-cli BGSAVE
+
+sleep 5
+
+{% endif %}
+
+echo "Encrypting..."
+
+tar czf "$BACKUP_DIR.tar.gz" -C "{{ backup_dir }}" "$DATE"
+
+gpg \
+    --batch \
+    --yes \
+    --encrypt \
+    --recipient "{{ backup_gpg_recipient }}" \
+    "$BACKUP_DIR.tar.gz"
+
+rm -rf "$BACKUP_DIR"
+rm "$BACKUP_DIR.tar.gz"
+
+echo "Uploading to S3..."
+
+aws s3 cp \
+    "$BACKUP_DIR.tar.gz.gpg" \
+    "s3://{{ backup_s3_bucket }}/{{ backup_s3_prefix }}/"
+
+echo "Cleaning old backups..."
+
+find "{{ backup_dir }}" \
+    -name "*.gpg" \
+    -mtime +{{ backup_retention_days }} \
+    -delete
+
+echo "Backup complete."

@@ -1,0 +1,26 @@
+---
+# roles/common/defaults/main.yml
+common_packages:
+  - curl
+  - git
+  - vim
+  - htop
+  - unzip
+  - wget
+  - lsb-release
+  - ca-certificates
+  - gnupg
+  - tree
+  - chrony
+  - unattended-upgrades
+  - apt-listchanges
+
+# for timezone and locale
+common_timezone: "UTC"
+
+common_ntp_servers:
+  - pool.ntp.org
+
+# motd / unintentional upgrades
+common_manage_motd: true
+common_enable_unattended_upgrades: true
