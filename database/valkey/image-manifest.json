@@ -1,0 +1,8 @@
+{
+  "image": "ubuntu-24.04-base",
+  "version": "1.0.0",
+  "parent": "ubuntu-24-04-x64",
+  "snapshot": "nyc3:236795634",
+  "builder": "digitalocean",
+  "packer_output": "packer-output.json"
+}

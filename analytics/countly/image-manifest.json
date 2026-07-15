@@ -1,0 +1,8 @@
+{
+  "image": "ubuntu-24.04-docker",
+  "version": "1.0.0",
+  "parent": "236848111",
+  "snapshot": "236850912",
+  "builder": "digitalocean",
+  "packer_output": "packer-output.json"
+}

@@ -1,0 +1,32 @@
+{
+  "image": "ubuntu-24.04-base",
+  "version": "1.0.0",
+  "provider": "digitalocean",
+  "region": "nyc3",
+
+  "snapshot": {
+    "id": "236795634",
+    "name": "ubuntu-24.04-base-v1.0.0"
+  },
+
+  "parent": {
+    "image": "ubuntu-24.04-x64",
+    "version": null
+  },
+
+  "build": {
+    "packer": "1.12.x",
+    "ansible_playbook": "base.yml",
+    "built_at": "2026-07-13T17:00:00Z"
+  },
+
+  "roles": [
+    "common",
+    "users",
+    "ssh_hardening",
+    "firewall",
+    "fail2ban"
+  ],
+
+  "status": "candidate"
+}

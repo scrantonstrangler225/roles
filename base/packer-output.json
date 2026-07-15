@@ -1,0 +1,50 @@
+{
+  "builds": [
+    {
+      "name": "ubuntu",
+      "builder_type": "digitalocean",
+      "build_time": 1783961172,
+      "files": null,
+      "artifact_id": "nyc3:236795634",
+      "packer_run_uuid": "b6c11922-b435-9cee-ba46-cfe0e0acbe11",
+      "custom_data": null
+    },
+    {
+      "name": "ubuntu",
+      "builder_type": "digitalocean",
+      "build_time": 1783969776,
+      "files": null,
+      "artifact_id": "nyc3:236797398",
+      "packer_run_uuid": "7169797b-397a-48e2-f73c-fb9a9f5781e7",
+      "custom_data": null
+    },
+    {
+      "name": "ubuntu",
+      "builder_type": "digitalocean",
+      "build_time": 1783995778,
+      "files": null,
+      "artifact_id": "nyc3:236848111",
+      "packer_run_uuid": "4ad10171-343a-fdd3-e9c1-87f85f210b98",
+      "custom_data": null
+    },
+    {
+      "name": "ubuntu",
+      "builder_type": "digitalocean",
+      "build_time": 1784040939,
+      "files": null,
+      "artifact_id": "nyc3:236908992",
+      "packer_run_uuid": "f9214f35-d276-1e31-0b5b-7e39297080d7",
+      "custom_data": null
+    },
+    {
+      "name": "ubuntu",
+      "builder_type": "digitalocean",
+      "build_time": 1784046641,
+      "files": null,
+      "artifact_id": "nyc3:236922702",
+      "packer_run_uuid": "2c385b25-e26f-49ea-d4ac-461fc37ece2b",
+      "custom_data": null
+    }
+  ],
+  "last_run_uuid": "2c385b25-e26f-49ea-d4ac-461fc37ece2b"
+}

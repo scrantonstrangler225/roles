@@ -1,0 +1,45 @@
+source "digitalocean" "ubuntu" {
+
+  api_token = var.do_token
+
+  image  = var.base_image
+  region = var.region
+  size   = var.size
+
+  ssh_username = "root"
+
+  #snapshot_name = var.snapshot_name
+  snapshot_name = "${var.snapshot_name}-v${var.image_version}"
+}
+
+build {
+
+  name = "base-ubuntu"
+
+  sources = [
+    "source.digitalocean.ubuntu"
+  ]
+
+  provisioner "shell" {
+    script = "scripts/bootstrap.sh"
+  }
+
+  provisioner "ansible" {
+    playbook_file = "../../../../cac/playbooks/base.yml"
+ 
+    ansible_env_vars = [
+      "ANSIBLE_CONFIG=/home/vagrant/cac/ansible.cfg"
+    ]
+
+  }
+
+  provisioner "shell" {
+    script = "scripts/cleanup.sh"
+  }
+
+  post-processor "manifest" {
+    output     = "packer-output.json"
+    strip_path = true
+  }
+
+}

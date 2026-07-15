@@ -1,0 +1,14 @@
+{
+  "builds": [
+    {
+      "name": "ubuntu",
+      "builder_type": "digitalocean",
+      "build_time": 1784062815,
+      "files": null,
+      "artifact_id": "nyc3:236941573",
+      "packer_run_uuid": "689e677e-0dbd-efee-ae65-f45de9ec4c9a",
+      "custom_data": null
+    }
+  ],
+  "last_run_uuid": "689e677e-0dbd-efee-ae65-f45de9ec4c9a"
+}
