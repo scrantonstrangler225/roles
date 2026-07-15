@@ -1,0 +1,6 @@
+- name: MongoDB Image
+  hosts: all
+  become: true
+
+  roles:
+    - mongodb

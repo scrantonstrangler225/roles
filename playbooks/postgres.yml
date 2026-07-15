@@ -1,0 +1,6 @@
+- name: Postgresql Image
+  hosts: all
+  become: true
+
+  roles:
+    - postgres

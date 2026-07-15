@@ -1,0 +1,46 @@
+---
+- name: Create human users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    groups: "{{ item.groups | default([]) | join(',') }}"
+    append: true
+    shell: "{{ item.shell | default('/bin/bash') }}"
+    create_home: true
+    state: present
+    password_lock: "{{ item.password_lock | default(true) }}"
+  loop: "{{ users_human }}"
+
+
+- name: Create SSH directory
+  ansible.builtin.file:
+    path: "/home/{{ item.name }}/.ssh"
+    state: directory
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+    mode: "0700"
+  loop: "{{ users_human }}"
+
+
+- name: Install authorized SSH keys
+  ansible.posix.authorized_key:
+    user: "{{ item.0.name }}"
+    key: "{{ item.1 }}"
+    state: present
+    manage_dir: false
+  loop: "{{ users_human | subelements('ssh_keys') }}"
+
+
+- name: Configure sudo access
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/{{ item.name }}"
+    content: "{{ item.name }} ALL=(ALL) NOPASSWD:ALL\n"
+    owner: root
+    group: root
+    mode: "0440"
+    validate: "/usr/sbin/visudo -cf %s"
+  when: item.sudo | default(false)
+  loop: "{{ users_human }}"
+
+- name: Verify admin user exists
+  ansible.builtin.command:
+    cmd: id vagrant

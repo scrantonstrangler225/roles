@@ -1,0 +1,51 @@
+- hosts: servers
+  become: true
+  roles:
+    - role: common
+      tags: [common, base]
+    - role: users
+      tags: [users, security]
+      #- ssh_hardening
+      #tags: [ssh, security]
+    - role: firewall
+      tags: [firewall, security, network]
+    - role: fail2ban
+      tags: [fail2ban, security]
+    - role: docker
+      tags: [docker]
+    - role: docker_networks
+      tags: [docker, network]
+    - role: docker_volumes
+      tags: [docker, storage]
+      #- docker_remote_api # for concourse CI
+      #tags: [docker, remote] 
+    - role: nginx
+      tags: [nginx, web]
+    - role: nginx_sites
+      tags: [nginx, web, sites]
+    - role: nginx_proxy
+      tags: [nginx, web, proxy]
+      #- certbot  # run after DNS points to server + ACME challenge serving
+      #tags: [certbot, tls, web]
+    - role: monitoring/prometheus
+      tags: [monitoring, prometheus]
+    - role: monitoring/grafana
+      tags: [monitoring, grafana]
+    - role: node_exporter
+      tags: [monitoring, exporters]
+    - role: cadvisor
+      tags: [monitoring, exporters]
+    - role: postgres
+      tags: [applications, postgres]
+    - role: mattermost
+      tags: [applications, mattermost]
+    - role: keycloak
+      tags: [applications, keycloak]
+    - role: mongodb
+      tags: [applications, mongodb]
+    - role: valkey
+      tags: [applications, valkey]
+    - role: countly
+      tags: [applications, countly]
+      #- role: backup
+      #tags: [applications, backups]

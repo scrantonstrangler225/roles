@@ -1,0 +1,53 @@
+---
+- name: Ensure MongoDB container is running
+  community.docker.docker_container:
+    name: "{{ mongodb_container_name }}"
+    image: "{{ mongodb_image }}"
+    state: started
+    restart_policy: unless-stopped
+
+    networks: "{{ mongodb_networks }}"
+
+    published_ports: "{{ mongodb_ports }}"
+
+    volumes: "{{ mongodb_volumes }}"
+
+    env: "{{ mongodb_env }}"
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - > 
+          mongosh
+          --username {{ mongodb_env.MONGO_INITDB_ROOT_USERNAME }}
+          --password {{ mongodb_env.MONGO_INITDB_ROOT_PASSWORD }}
+          --authenticationDatabase admin
+          --eval db.adminCommand\('ping'\)
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+    security_opts:
+      - no-new-privileges:true
+
+  notify: Restart MongoDB
+
+- name: Wait for MongoDB to become available
+  community.docker.docker_container_exec:
+    container: "{{ mongodb_container_name }}"
+    command: >
+      mongosh
+      --username {{ mongodb_env.MONGO_INITDB_ROOT_USERNAME }}
+      --password {{ mongodb_env.MONGO_INITDB_ROOT_PASSWORD }}
+      --authenticationDatabase admin
+      --eval "db.adminCommand('ping')"
+  register: mongodb_ready
+  retries: 10
+  delay: 5
+  until: mongodb_ready.rc == 0
+
+- name: Configure application users
+  ansible.builtin.include_tasks: users.yml
+
+

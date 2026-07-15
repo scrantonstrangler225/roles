@@ -1,0 +1,5 @@
+---
+- name: Restart Mattermost
+  community.docker.docker_container:
+    name: "{{ mattermost_container_name }}"
+    restart: true

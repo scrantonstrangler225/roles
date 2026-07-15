@@ -1,0 +1,8 @@
+- name: Docker Runtime Image 
+  hosts: all
+  become: true
+
+  roles:
+    - docker
+    - docker_networks
+    - docker_volumes

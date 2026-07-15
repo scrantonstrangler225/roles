@@ -1,0 +1,7 @@
+{
+  "hosts": [
+{% for host in docker_remote_api_hosts %}
+    "{{ host }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+  ]
+}

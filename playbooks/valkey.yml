@@ -1,0 +1,6 @@
+- name: Valkey Image
+  hosts: all
+  become: true
+
+  roles:
+    - valkey

@@ -1,0 +1,5 @@
+---
+- name: Restart PostgreSQL
+  community.docker.docker_container:
+    name: "{{ postgres_container_name }}"
+    restart: true

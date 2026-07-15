@@ -1,0 +1,23 @@
+---
+- name: Create application database users
+  community.docker.docker_container_exec:
+    container: "{{ mongodb_container_name }}"
+    command: >
+      mongosh
+      --username {{ mongodb_env.MONGO_INITDB_ROOT_USERNAME }}
+      --password {{ mongodb_env.MONGO_INITDB_ROOT_PASSWORD }}
+      --authenticationDatabase admin
+      --eval "
+      db = db.getSiblingDB('{{ item.name }}');
+      db.createUser({
+        user: '{{ item.user }}',
+        pwd: '{{ item.password }}',
+        roles: [
+          { role: 'readWrite', db: '{{ item.name }}' }
+        ]
+      })"
+  loop: "{{ mongodb_databases }}"
+  register: mongodb_users
+  failed_when:
+    - mongodb_users.rc != 0
+    - "'already exists' not in (mongodb_users.stderr | default(''))"

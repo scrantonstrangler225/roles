@@ -1,0 +1,14 @@
+---
+# Human users
+users_human:
+  - name: vagrant
+    groups:
+      - sudo
+      #- docker
+    #shell: /bin/bash
+    sudo: true
+    password_lock: true
+    ssh_keys:
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGzWeKX3L6SMTSSYQNIfzedeEN+JiT18Sq79Du2WMDXD vagrant@minion2"
+        #- "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHDMC+m53Gr99ZURzUOkyHLqTOK65RNmHS7S031Cw1mZ vagrant"
+

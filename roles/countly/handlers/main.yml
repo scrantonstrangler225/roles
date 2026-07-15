@@ -1,0 +1,5 @@
+---
+- name: Restart Countly
+  community.docker.docker_container:
+    name: "{{ countly_container_name }}"
+    restart: true

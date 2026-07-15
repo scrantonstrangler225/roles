@@ -1,0 +1,6 @@
+- name: Grafana Image
+  hosts: all
+  become: true
+
+  roles:
+    - monitoring/grafana

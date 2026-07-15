@@ -1,0 +1,9 @@
+- name: Reverse Proxy Image
+  hosts: all
+  become: true
+
+  roles:
+    - nginx
+    - nginx_sites
+    - nginx_proxy
+    #- certbot # later after DNS hookup/ etc

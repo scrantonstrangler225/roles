@@ -1,0 +1,31 @@
+Port {{ ssh_port }}
+
+PermitRootLogin {{ ssh_permit_root_login }}
+
+PasswordAuthentication {{ ssh_password_authentication }}
+
+PubkeyAuthentication {{ ssh_pubkey_authentication }}
+
+ChallengeResponseAuthentication no
+
+KbdInteractiveAuthentication no
+
+PermitEmptyPasswords no
+
+MaxAuthTries {{ ssh_max_auth_tries }}
+
+LoginGraceTime 20
+
+X11Forwarding no
+
+AllowTcpForwarding no
+
+AllowAgentForwarding no
+
+PermitTunnel no
+
+ClientAliveInterval 300
+
+ClientAliveCountMax 2
+
+AllowUsers {{ ssh_allow_users | join(' ') }}

@@ -1,0 +1,33 @@
+---
+- name: Ensure cAdvisor container is running
+  community.docker.docker_container:
+    name: "{{ cadvisor_container_name }}"
+    image: "{{ cadvisor_image }}"
+    state: started
+    restart_policy: unless-stopped
+
+    networks: "{{ cadvisor_networks }}"
+    published_ports: "{{ cadvisor_ports }}"
+    volumes: "{{ cadvisor_volumes }}"
+
+    command:
+      - "--housekeeping_interval=30s"
+      - "--docker_only=true"
+
+    security_opts:
+      - no-new-privileges:true
+
+        #cap_drop:
+        #- ALL
+
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - "-q"
+        - "-O"
+        - "-"
+        - http://localhost:8080/healthz
+      interval: 30s
+      timeout: 10s
+      retries: 3
