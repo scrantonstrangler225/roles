@@ -1,4 +1,0 @@
----
-# List of Docker volumes to ensure exist
-docker_volumes: []
-
