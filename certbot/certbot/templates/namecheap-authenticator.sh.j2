@@ -1,0 +1,80 @@
+#!/bin/bash
+set -euo pipefail
+
+# Certbot provides these environment variables to manual hooks:
+#
+# CERTBOT_DOMAIN
+# CERTBOT_VALIDATION
+#
+# Namecheap API configuration is supplied by Ansible.
+
+NAMECHEAP_API_USER="{{ certbot_namecheap_api_user }}"
+NAMECHEAP_API_KEY="{{ certbot_namecheap_api_key }}"
+NAMECHEAP_CLIENT_IP="{{ certbot_namecheap_client_ip }}"
+
+DOMAIN="${CERTBOT_DOMAIN}"
+VALIDATION="${CERTBOT_VALIDATION}"
+
+NAMECHEAP_API_URL="https://api.namecheap.com/xml.response"
+
+# Determine the Namecheap SLD/TLD components.
+#
+# This implementation assumes the managed zone is based on
+# certbot_namecheap_domain, for example:
+#
+#   newskoolmedia.world
+#
+# and Certbot may request:
+#
+#   dev.newskoolmedia.world
+#   *.prod.newskoolmedia.world
+#
+DNS_DOMAIN="{{ certbot_namecheap_domain }}"
+
+if [[ "${DOMAIN}" == \*.* ]]; then
+    DOMAIN="${DOMAIN#*.}"
+fi
+
+if [[ "${DOMAIN}" == *".${DNS_DOMAIN}" ]]; then
+    HOST="${DOMAIN%.${DNS_DOMAIN}}"
+else
+    HOST="@"
+fi
+
+# ACME DNS-01 validation always uses _acme-challenge.
+if [[ "${HOST}" == "@" ]]; then
+    RECORD="_acme-challenge"
+else
+    RECORD="_acme-challenge.${HOST}"
+fi
+
+echo "Creating Namecheap TXT record:"
+echo "  Host: ${RECORD}"
+echo "  Value: ${VALIDATION}"
+
+RESPONSE="$(
+    curl -fsS --get "${NAMECHEAP_API_URL}" \
+        --data-urlencode "ApiUser=${NAMECHEAP_API_USER}" \
+        --data-urlencode "ApiKey=${NAMECHEAP_API_KEY}" \
+        --data-urlencode "UserName=${NAMECHEAP_API_USER}" \
+        --data-urlencode "ClientIp=${NAMECHEAP_CLIENT_IP}" \
+        --data-urlencode "Command=namecheap.domains.dns.setHosts" \
+        --data-urlencode "SLD=${DNS_DOMAIN%%.*}" \
+        --data-urlencode "TLD=${DNS_DOMAIN#*.}" \
+        --data-urlencode "HostName1=${RECORD}" \
+        --data-urlencode "RecordType1=TXT" \
+        --data-urlencode "Address1=${VALIDATION}" \
+        --data-urlencode "TTL1=60"
+)"
+
+if ! echo "${RESPONSE}" | grep -q 'IsSuccess="true"'; then
+    echo "ERROR: Namecheap DNS update failed"
+    echo "${RESPONSE}"
+    exit 1
+fi
+
+echo "Namecheap TXT record created successfully."
+
+# Give DNS time to propagate before Let's Encrypt checks it.
+sleep {{ certbot_dns_propagation_seconds | int }}
+

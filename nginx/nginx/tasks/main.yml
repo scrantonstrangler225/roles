@@ -1,0 +1,61 @@
+---
+- name: Ensure Nginx configuration directory exists
+  ansible.builtin.file:
+    path: /var/lib/nginx
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Render nginx main configuration
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /var/lib/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart nginx container
+
+
+- name: Ensure Nginx container is running
+  community.docker.docker_container:
+    name: "{{ nginx_container_name }}"
+    image: "{{ nginx_image }}"
+    state: started
+    restart_policy: unless-stopped
+    networks: "{{ nginx_networks }}"
+    published_ports: "{{ nginx_ports }}"
+    env: "{{ nginx_env | default(omit) }}"
+    volumes: "{{ nginx_volumes }}"
+
+    # Container hardening
+    security_opts:
+      - no-new-privileges:true
+
+        #cap_drop:
+        #- ALL
+
+        #capabilities:
+        #- NET_BIND_SERVICE
+
+    #read_only: true
+
+    #tmpfs:
+     #- /var/cache/nginx
+     #- /var/run
+
+    # Logging
+    log_driver: json-file
+    log_options:
+      max-size: "10m"
+      max-file: "5"
+
+    # Healthcheck
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - nginx -t || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

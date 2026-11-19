@@ -1,0 +1,37 @@
+---
+- name: Install certbot
+  ansible.builtin.apt:
+    name: certbot
+    state: present
+    update_cache: true
+
+- name: Create ACME challenge directory
+  ansible.builtin.file:
+    path: "{{ certbot_webroot }}"
+    state: directory
+    mode: "0755"
+
+- name: Obtain certificate
+  ansible.builtin.command:
+    cmd: >
+      certbot certonly
+      --webroot
+      --webroot-path {{ certbot_webroot }}
+      --email {{ certbot_email }}
+      --agree-tos
+      --non-interactive
+      -d {{ item }}
+  loop: "{{ certbot_domains }}"
+  register: certbot_result
+  changed_when: "'Congratulations' in certbot_result.stdout"
+  failed_when:
+    - certbot_result.rc != 0
+    - "'Certificate not yet due for renewal' not in certbot_result.stdout"
+
+
+- name: Configure certbot renewal cron
+  ansible.builtin.cron:
+    name: certbot renew
+    minute: "{{ certbot_renew_minute }}"
+    hour: "{{ certbot_renew_hour }}"
+    job: "certbot renew --quiet --deploy-hook 'docker restart nginx'"

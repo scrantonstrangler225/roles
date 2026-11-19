@@ -1,0 +1,20 @@
+---
+nginx_container_name: nginx
+nginx_image: nginx:latest
+
+nginx_networks:
+  - name: proxy
+
+nginx_ports:
+  - "80:80"
+  - "443:443"
+
+nginx_env: {}
+
+nginx_volumes:
+  - "nginx_data:/etc/nginx/conf.d"
+  - "nginx_logs:/var/log/nginx"
+  - "/var/lib/nginx/sites:/etc/nginx/conf.d/sites"  # added
+  - "/var/lib/nginx/proxy_sites:/etc/nginx/conf.d/proxy" # added
+  - "/var/lib/nginx/letsencrypt:/var/www/letsencrypt" # added
+  - "/etc/letsencrypt:/etc/letsencrypt:ro" # added

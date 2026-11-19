@@ -1,0 +1,71 @@
+user nginx;
+
+worker_processes auto;
+
+error_log /var/log/nginx/error.log warn;
+pid /var/run/nginx.pid;
+
+events {
+    worker_connections 1024;
+    multi_accept on;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    # -----------------------------------------------------------------------
+    # Logging
+    # -----------------------------------------------------------------------
+
+    log_format main
+        '$remote_addr - $remote_user [$time_local] "$request" '
+        '$status $body_bytes_sent "$http_referer" '
+        '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log /var/log/nginx/access.log main;
+
+    # -----------------------------------------------------------------------
+    # General
+    # -----------------------------------------------------------------------
+
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+
+    server_tokens off;
+
+    # -----------------------------------------------------------------------
+    # Client limits
+    # -----------------------------------------------------------------------
+
+    client_max_body_size 50M;
+    client_body_timeout 60s;
+    client_header_timeout 60s;
+    send_timeout 60s;
+
+    # -----------------------------------------------------------------------
+    # Proxy defaults
+    # -----------------------------------------------------------------------
+
+    proxy_connect_timeout 30s;
+    proxy_send_timeout 30s;
+    proxy_read_timeout 30s;
+
+    # -----------------------------------------------------------------------
+    # TLS defaults
+    # -----------------------------------------------------------------------
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    # -----------------------------------------------------------------------
+    # Include generated site configurations
+    # -----------------------------------------------------------------------
+
+    include /etc/nginx/sites-enabled/*.conf;
+    include /etc/nginx/proxy_sites/*.conf;
+}
+

@@ -1,0 +1,26 @@
+---
+nginx_container_name: nginx
+nginx_image: nginx:1.31.4
+
+nginx_networks:
+  - name: proxy
+
+nginx_ports:
+  - "80:80"
+  - "443:443"
+
+nginx_env: {}
+
+nginx_volumes:
+  # Main Nginx configuration managed by Ansible
+  - "/var/lib/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
+  # nginx logs
+  - "nginx_logs:/var/log/nginx"
+  # Generated site configurations
+  - "/var/lib/nginx/sites:/etc/nginx/sites-enabled:ro" 
+  # Generated reverse-proxy configurations
+  - "/var/lib/nginx/proxy_sites:/etc/nginx/proxy_sites:ro" 
+  # HTTP-01 ACME challenge directory
+  - "/var/lib/nginx/letsencrypt:/var/www/letsencrypt:ro"
+  # Let's Encrypt certificates
+  - "/etc/letsencrypt:/etc/letsencrypt:ro"

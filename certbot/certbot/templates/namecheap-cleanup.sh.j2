@@ -1,0 +1,36 @@
+#!/bin/bash
+set -euo pipefail
+
+NAMECHEAP_API_USER="{{ certbot_namecheap_api_user }}"
+NAMECHEAP_API_KEY="{{ certbot_namecheap_api_key }}"
+NAMECHEAP_CLIENT_IP="{{ certbot_namecheap_client_ip }}"
+
+DOMAIN="${CERTBOT_DOMAIN}"
+
+if [[ "${DOMAIN}" == \*.* ]]; then
+    DOMAIN="${DOMAIN#*.}"
+fi
+
+DNS_DOMAIN="{{ certbot_namecheap_domain }}"
+
+if [[ "${DOMAIN}" == *".${DNS_DOMAIN}" ]]; then
+    HOST="${DOMAIN%.${DNS_DOMAIN}}"
+else
+    HOST="@"
+fi
+
+if [[ "${HOST}" == "@" ]]; then
+    RECORD="_acme-challenge"
+else
+    RECORD="_acme-challenge.${HOST}"
+fi
+
+echo "Cleaning up Namecheap TXT record:"
+echo "  Host: ${RECORD}"
+
+# DNS cleanup will be implemented by retrieving the existing
+# Namecheap records, removing only the ACME TXT record created
+# for this Certbot validation, and restoring the remaining records.
+
+exit 0
+

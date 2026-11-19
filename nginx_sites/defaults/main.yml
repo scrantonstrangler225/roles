@@ -1,0 +1,2 @@
+nginx_sites: []
+nginx_sites_path: "/var/lib/nginx/sites"

@@ -1,0 +1,9 @@
+---
+- name: Restart nginx container
+  community.docker.docker_container:
+    name: nginx
+    restart: true
+
+- name: Reload nginx container
+  ansible.builtin.command:
+    cmd: docker exec nginx nginx -s reload

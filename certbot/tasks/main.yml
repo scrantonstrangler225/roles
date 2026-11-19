@@ -1,0 +1,135 @@
+---
+# Install Certbot and supporting packages
+- name: Install Certbot packages
+  ansible.builtin.apt:
+    name:
+      - certbot
+      - python3-certbot-nginx
+      - python3-requests
+    state: present
+    update_cache: true
+
+# ---------------------------------------------------------------------------
+# HTTP-01
+# ---------------------------------------------------------------------------
+
+- name: Ensure ACME challenge directory exists
+  ansible.builtin.file:
+    path: "{{ certbot_webroot }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: certbot_challenge_type == "http"
+
+- name: Obtain Let's Encrypt certificate using HTTP-01
+  ansible.builtin.command:
+    cmd: >
+      certbot certonly
+      --webroot
+      --webroot-path {{ certbot_webroot }}
+      --email {{ certbot_email }}
+      --agree-tos
+      --non-interactive
+      {% if certbot_staging %}--test-cert{% endif %}
+      {% for domain in certbot_domains %}
+      -d {{ domain }}
+      {% endfor %}
+  args:
+    creates: "/etc/letsencrypt/live/{{ certbot_domains[0] }}/fullchain.pem"
+  when:
+    - certbot_challenge_type == "http"
+    - certbot_domains | length > 0
+    - certbot_email | length > 0
+
+# ---------------------------------------------------------------------------
+# DNS-01 / Namecheap
+# ---------------------------------------------------------------------------
+
+- name: Ensure Certbot DNS hooks directory exists
+  ansible.builtin.file:
+    path: /etc/letsencrypt/namecheap
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  when: certbot_challenge_type == "dns"
+
+- name: Install Namecheap DNS authenticator hook
+  ansible.builtin.template:
+    src: namecheap-authenticator.sh.j2
+    dest: /etc/letsencrypt/namecheap/authenticator.sh
+    owner: root
+    group: root
+    mode: "0700"
+  when: certbot_challenge_type == "dns"
+
+- name: Install Namecheap DNS cleanup hook
+  ansible.builtin.template:
+    src: namecheap-cleanup.sh.j2
+    dest: /etc/letsencrypt/namecheap/cleanup.sh
+    owner: root
+    group: root
+    mode: "0700"
+  when: certbot_challenge_type == "dns"
+
+- name: Obtain Let's Encrypt certificate using DNS-01
+  ansible.builtin.command:
+    cmd: >
+      certbot certonly
+      --manual
+      --preferred-challenges dns
+      --manual-auth-hook /etc/letsencrypt/namecheap/authenticator.sh
+      --manual-cleanup-hook /etc/letsencrypt/namecheap/cleanup.sh
+      --email {{ certbot_email }}
+      --agree-tos
+      --non-interactive
+      {% if certbot_staging %}--test-cert{% endif %}
+      {% for domain in certbot_domains %}
+      -d {{ domain }}
+      {% endfor %}
+  args:
+    creates: "/etc/letsencrypt/live/{{ certbot_domains[0] }}/fullchain.pem"
+  when:
+    - certbot_challenge_type == "dns"
+    - certbot_domains | length > 0
+    - certbot_email | length > 0
+
+# ---------------------------------------------------------------------------
+# Renewal
+# ---------------------------------------------------------------------------
+
+- name: Enable Certbot timer
+  ansible.builtin.service:
+    name: certbot.timer
+    enabled: true
+    state: started
+  when: certbot_enable_timer
+
+# ---------------------------------------------------------------------------
+# Renewal deploy hook
+# ---------------------------------------------------------------------------
+
+- name: Ensure renewal deploy hook directory exists
+  ansible.builtin.file:
+    path: /etc/letsencrypt/renewal-hooks/deploy
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install Nginx deploy hook
+  ansible.builtin.copy:
+    dest: /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh
+    owner: root
+    group: root
+    mode: "0755"
+    content: |
+      #!/bin/sh
+      set -eu
+
+      NGINX_CONTAINER="${NGINX_CONTAINER_NAME:-nginx}"
+
+      docker exec "$NGINX_CONTAINER" nginx -t
+      docker exec "$NGINX_CONTAINER" nginx -s reload
+

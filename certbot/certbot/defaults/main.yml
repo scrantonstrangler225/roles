@@ -1,0 +1,35 @@
+---
+# Contact email for Let's Encrypt
+certbot_email: ""
+
+# Domain list (first domain becomes the primary certificate name)
+certbot_domains: []
+
+# Webroot used for ACME HTTP-01 challenges
+certbot_webroot: "/var/lib/nginx/letsencrypt"
+
+# Use Let's Encrypt staging environment (set false in production)
+certbot_staging: true
+
+# Enable automatic renewal
+certbot_enable_timer: true
+
+certbot_renew_hour: "2"
+certbot_renew_minute: "30"
+
+certbot_challenge_type: dns
+
+## to test HTTP-01 in DEV ##
+#certbot_challenge_type: http
+
+# Namecheap DNS-01 configuration
+certbot_namecheap_api_user: ""
+certbot_namecheap_api_key: ""
+certbot_namecheap_client_ip: ""
+
+# DNS zone managed by Namecheap
+certbot_namecheap_domain: ""
+
+# Wait for DNS propagation
+certbot_dns_propagation_seconds: 30
+
