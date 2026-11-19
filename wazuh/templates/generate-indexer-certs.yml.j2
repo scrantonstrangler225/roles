@@ -1,0 +1,18 @@
+---
+services:
+
+  generator:
+    image: "{{ wazuh_certs_generator_image }}"
+
+    hostname: wazuh-certs-generator
+
+    volumes:
+      - "{{ wazuh_certs_dir }}:/certificates"
+      - "{{ wazuh_config_dir }}/certs.yml:/config/certs.yml:ro"
+
+    environment:
+      CERT_TOOL_VERSION: "{{ wazuh_cert_tool_version }}"
+
+networks:
+  "{{ wazuh_network_name }}":
+    external: true

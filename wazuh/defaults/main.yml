@@ -1,0 +1,160 @@
+---
+# ================================================================
+# General
+# ================================================================
+
+wazuh_version: "4.14.0"
+wazuh_cert_tool_version: "4.14"
+
+wazuh_project_name: wazuh
+
+wazuh_base_dir: "/opt/wazuh"
+
+wazuh_config_dir: "{{ wazuh_base_dir }}/config"
+wazuh_certs_dir: "{{ wazuh_config_dir }}/certs"
+
+wazuh_compose_file: "{{ wazuh_base_dir }}/docker-compose.yml"
+wazuh_cert_compose_file: "{{ wazuh_base_dir }}/generate-indexer-certs.yml"
+
+wazuh_indexer_nodes_dn: "CN=wazuh.indexer,OU=Wazuh,O=Wazuh,L=California,C=US"
+wazuh_indexer_opensearch_config: "/opt/wazuh/config/indexer/opensearch.yml"
+wazuh_indexer_security_config: "{{ wazuh_config_dir }}/indexer"
+wazuh_indexer_security_config_dir: "/opt/wazuh/config/indexer"
+
+  #wazuh_indexer_security_config_dir: "/opt/wazuh/config/indexer/opensearch-security"
+
+
+
+
+
+
+# ================================================================
+# Docker network
+# ================================================================
+
+wazuh_network_name: "monitoring"
+
+# ================================================================
+# Docker volumes
+#
+# These MUST already be created by docker_volumes.
+# ================================================================
+
+wazuh_manager_data_volume: "wazuh_manager_data"
+wazuh_manager_logs_volume: "wazuh_manager_logs"
+wazuh_indexer_data_volume: "wazuh_indexer_data"
+wazuh_indexer_logs_volume: "wazuh_indexer_logs"
+wazuh_dashboard_data_volume: "wazuh_dashboard_data"
+wazuh_manager_etc_volume: "wazuh_manager_etc"
+wazuh_manager_queue_volume: "wazuh_manager_queue"
+wazuh_manager_multigroups_volume: "wazuh_manager_multigroups"
+
+# ================================================================
+# Container names
+# ================================================================
+
+wazuh_manager_container_name: "wazuh.manager"
+wazuh_indexer_container_name: "wazuh.indexer"
+wazuh_dashboard_container_name: "wazuh.dashboard"
+
+# ================================================================
+# Images
+# ================================================================
+
+wazuh_manager_image: "wazuh/wazuh-manager:{{ wazuh_version }}"
+wazuh_indexer_image: "wazuh/wazuh-indexer:{{ wazuh_version }}"
+wazuh_dashboard_image: "wazuh/wazuh-dashboard:{{ wazuh_version }}"
+
+# Certificate generator has independent versioning
+wazuh_certs_generator_image: "wazuh/wazuh-certs-generator:0.0.4"
+
+
+# ================================================================
+# Manager
+# ================================================================
+
+wazuh_manager_hostname: "wazuh.manager"
+
+wazuh_manager_port: 1514
+wazuh_manager_registration_port: 1515
+wazuh_manager_api_port: 55000
+
+
+# ================================================================
+# Indexer
+# ================================================================
+
+wazuh_indexer_hostname: "wazuh.indexer"
+
+wazuh_indexer_port: 9200
+
+wazuh_indexer_java_opts: "-Xms1g -Xmx1g"
+
+# ================================================================
+# Dashboard
+# ================================================================
+
+wazuh_dashboard_hostname: "wazuh.dashboard"
+
+wazuh_dashboard_port: 5601
+
+# We will eventually put this behind Nginx.
+wazuh_dashboard_external_port: 5601
+
+## new
+wazuh_dashboard_config_dir: "{{ wazuh_config_dir }}/dashboard"
+wazuh_dashboard_opensearch_config: "{{ wazuh_dashboard_config_dir }}/opensearch_dashboards.yml"
+
+
+# ================================================================
+# Wazuh credentials
+#
+# Override these with Ansible Vault.
+# ================================================================
+
+wazuh_indexer_username: "admin"
+wazuh_indexer_password: "admin"
+
+wazuh_manager_indexer_username: "wazuh-manager"
+wazuh_manager_indexer_password: "admin"
+
+wazuh_dashboard_username: "kibanaserver"
+wazuh_dashboard_password: "admin"
+
+wazuh_api_username: "wazuh-wui"
+wazuh_api_password: "admin"
+
+# ================================================================
+# TLS certificates
+# ================================================================
+
+wazuh_root_ca_cert: "{{ wazuh_certs_dir }}/root-ca.pem"
+
+wazuh_indexer_cert: "{{ wazuh_certs_dir }}/wazuh.indexer.pem"
+wazuh_indexer_key: "{{ wazuh_certs_dir }}/wazuh.indexer-key.pem"
+
+wazuh_manager_cert: "{{ wazuh_certs_dir }}/wazuh.manager.pem"
+wazuh_manager_key: "{{ wazuh_certs_dir }}/wazuh.manager-key.pem"
+
+wazuh_dashboard_cert: "{{ wazuh_certs_dir }}/wazuh.dashboard.pem"
+wazuh_dashboard_key: "{{ wazuh_certs_dir }}/wazuh.dashboard-key.pem"
+
+# ================================================================
+# Certificate generation
+# ================================================================
+
+wazuh_generate_certs: true
+
+# ================================================================
+# Kernel
+# ================================================================
+
+wazuh_vm_max_map_count: 262144
+
+# ================================================================
+# Compose behavior
+# ================================================================
+
+wazuh_service_state: present
+
+wazuh_restart_policy: unless-stopped

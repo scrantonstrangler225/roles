@@ -1,0 +1,35 @@
+---
+- name: Install required packages on Debian
+  ansible.builtin.apt:
+    name:
+      - curl
+      - gnupg
+      - apt-transport-https
+    state: present
+    update_cache: true
+  when: ansible_os_family == "Debian"
+
+- name: Download Wazuh repository GPG key
+  ansible.builtin.get_url:
+    url: "https://packages.wazuh.com/key/GPG-KEY-WAZUH"
+    dest: /etc/apt/keyrings/wazuh.gpg
+    mode: "0644"
+  when: ansible_os_family == "Debian"
+
+- name: Add Wazuh repository on Debian
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main"
+    filename: wazuh
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install Wazuh agent on Debian
+  ansible.builtin.apt:
+    name: "{{ wazuh_package_name }}"
+    state: present
+    update_cache: true
+  environment:
+    WAZUH_MANAGER: "{{ wazuh_manager_address }}"
+    WAZUH_AGENT_NAME: "{{ wazuh_agent_name }}"
+  when: ansible_os_family == "Debian"
+

@@ -1,0 +1,74 @@
+---
+- name: Create Wazuh Indexer configuration directory
+  ansible.builtin.file:
+    path: "{{ wazuh_indexer_opensearch_config | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create Wazuh Indexer security configuration directory
+  ansible.builtin.file:
+    path: "{{ wazuh_indexer_security_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create Wazuh Dashboard configuration directory
+  ansible.builtin.file:
+    path: "{{ wazuh_dashboard_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Deploy Wazuh Indexer Security configuration
+  ansible.builtin.copy:
+    src: "opensearch-security/{{ item }}"
+    dest: "{{ wazuh_indexer_security_config_dir }}/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - internal_users.yml
+    - config.yml
+    - roles.yml
+    - roles_mapping.yml
+    - action_groups.yml
+    - nodes_dn.yml
+    - tenants.yml
+    - audit.yml
+    - allowlist.yml
+    - whitelist.yml
+
+- name: Deploy Wazuh Indexer OpenSearch configuration
+  ansible.builtin.template:
+    src: opensearch.yml.j2
+    dest: "{{ wazuh_indexer_opensearch_config }}"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Deploy Wazuh Dashboard OpenSearch configuration
+  ansible.builtin.template:
+    src: opensearch_dashboards.yml.j2
+    dest: "{{ wazuh_dashboard_opensearch_config }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Wazuh
+
+- name: Deploy Wazuh Docker Compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ wazuh_compose_file }}"
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Verify Wazuh Compose configuration
+  ansible.builtin.command:
+    cmd: docker compose -f {{ wazuh_compose_file }} config
+  changed_when: false
+

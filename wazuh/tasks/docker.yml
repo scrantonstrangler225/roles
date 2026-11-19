@@ -1,0 +1,31 @@
+---
+- name: Check Docker
+  ansible.builtin.command:
+    cmd: docker version
+  register: wazuh_docker_version
+  changed_when: false
+
+- name: Check Docker Compose
+  ansible.builtin.command:
+    cmd: docker compose version
+  register: wazuh_compose_version
+  changed_when: false
+
+- name: Pull Wazuh images
+  community.docker.docker_image:
+    name: "{{ item }}"
+    source: pull
+  loop:
+    - "{{ wazuh_manager_image }}"
+    - "{{ wazuh_indexer_image }}"
+    - "{{ wazuh_dashboard_image }}"
+  when:
+    - wazuh_enable_manager
+    - wazuh_enable_indexer
+    - wazuh_enable_dashboard
+
+#maybe remove
+- name: Ensure Wazuh Docker network exists
+  community.docker.docker_network:
+    name: "{{ wazuh_network_name }}"
+    state: present

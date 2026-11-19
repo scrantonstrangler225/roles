@@ -1,0 +1,15 @@
+---
+- name: Start Wazuh Docker Compose stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ wazuh_base_dir }}"
+    project_name: "{{ wazuh_project_name }}"
+    state: "{{ wazuh_service_state }}"
+    recreate: auto
+  when: wazuh_service_state == "started"
+
+- name: Stop Wazuh Docker Compose stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ wazuh_base_dir }}"
+    project_name: "{{ wazuh_project_name }}"
+    state: absent
+  when: wazuh_service_state == "stopped"
