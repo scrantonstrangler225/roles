@@ -1,0 +1,12 @@
+---
+- name: Create Graylog directories
+  ansible.builtin.import_tasks: directories.yml
+
+- name: Configure Graylog
+  ansible.builtin.import_tasks: config.yml
+
+- name: Deploy Graylog
+  ansible.builtin.import_tasks: deploy.yml
+
+- name: Validate Graylog
+  ansible.builtin.import_tasks: validate.yml

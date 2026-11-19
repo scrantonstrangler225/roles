@@ -1,0 +1,80 @@
+---
+services:
+
+  graylog-datanode:
+    image: "{{ graylog_datanode_image }}"
+    container_name: "{{ graylog_datanode_container_name }}"
+    hostname: "{{ graylog_datanode_hostname }}"
+
+    restart: "{{ graylog_restart_policy }}"
+
+    environment:
+      GRAYLOG_DATANODE_PASSWORD_SECRET: "{{ graylog_datanode_password_secret }}"
+      GRAYLOG_DATANODE_MONGODB_URI: "{{ graylog_mongodb_uri }}"
+
+    networks:
+      - "{{ graylog_network_name }}"
+      - "{{ graylog_database_network_name }}"
+
+    volumes:
+
+{% if graylog_persist_datanode_data %}
+      - "{{ graylog_datanode_data_dir }}:/var/lib/graylog-datanode"
+{% endif %}
+
+{% if graylog_persist_datanode_logs %}
+      - "{{ graylog_datanode_logs_dir }}:/var/log/graylog-datanode"
+{% endif %}
+
+
+  graylog:
+    image: "{{ graylog_image }}"
+    container_name: "{{ graylog_container_name }}"
+    hostname: "{{ graylog_hostname }}"
+
+    restart: "{{ graylog_restart_policy }}"
+
+    depends_on:
+      - graylog-datanode
+
+    networks:
+      - "{{ graylog_network_name }}"
+      - "{{ graylog_database_network_name }}"
+
+    ports:
+      # Web/API
+      - "{{ graylog_http_port }}:9000"
+
+      # Syslog
+      - "{{ graylog_syslog_udp_port }}:1514/udp"
+      - "{{ graylog_syslog_tcp_port }}:1514/tcp"
+
+      # GELF
+      - "{{ graylog_gelf_udp_port }}:12201/udp"
+      - "{{ graylog_gelf_tcp_port }}:12201/tcp"
+
+    volumes:
+
+      - "{{ graylog_config_path }}:/usr/share/graylog/config/graylog.conf:ro"
+      #- "{{ graylog_config_path }}:/usr/share/graylog/data/config/graylog.conf:ro"
+
+{% if graylog_persist_data %}
+      - "{{ graylog_data_dir }}/graylog:/usr/share/graylog/data"
+{% endif %}
+
+{% if graylog_persist_logs %}
+      - "{{ graylog_logs_path }}:/var/log/graylog"
+{% endif %}
+
+    environment:
+      GRAYLOG_PASSWORD_SECRET: "{{ graylog_password_secret }}"
+      GRAYLOG_ROOT_PASSWORD_SHA2: "{{ graylog_root_password_sha2 }}"
+      GRAYLOG_HTTP_EXTERNAL_URI: "{{ graylog_http_external_uri }}"
+      GRAYLOG_MONGODB_URI: "{{ graylog_mongodb_uri }}"
+
+networks:
+
+  "{{ graylog_network_name }}":
+    external: true
+  "{{ graylog_database_network_name }}":
+    external: true

@@ -1,0 +1,32 @@
+---
+- name: Verify Docker is available
+  ansible.builtin.command:
+    cmd: docker version
+  changed_when: false
+
+- name: Verify Docker Compose is available
+  ansible.builtin.command:
+    cmd: docker compose version
+  changed_when: false
+
+- name: Pull Graylog image
+  community.docker.docker_image:
+    name: "{{ graylog_image }}"
+    source: pull
+
+- name: Pull Graylog Data Node image
+  community.docker.docker_image:
+    name: "{{ graylog_datanode_image }}"
+    source: pull
+
+- name: Ensure Graylog Docker network exists
+  community.docker.docker_network:
+    name: "{{ graylog_network_name }}"
+    state: present
+
+- name: Start Graylog stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ graylog_base_dir }}"
+    project_name: "{{ graylog_project_name }}"
+    state: "{{ graylog_compose_state }}"
+    recreate: auto

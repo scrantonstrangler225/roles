@@ -1,0 +1,131 @@
+---
+# -------------------------------------------------------------------
+# General
+# -------------------------------------------------------------------
+
+graylog_version: "7.0"
+
+graylog_project_name: graylog
+
+graylog_base_dir: "/opt/graylog"
+
+graylog_config_dir: "{{ graylog_base_dir }}/config"
+graylog_data_dir: "{{ graylog_base_dir }}/data"
+graylog_logs_dir: "{{ graylog_base_dir }}/logs"
+
+graylog_compose_state: present
+graylog_datanode_password_secret: "foobarfoobarfoobarfoobar"
+
+#graylog_mongodb_uri: "mongodb://mongodb:27017/graylog"
+graylog_mongodb_uri: "mongodb://admin:password@mongodb:27017/graylog?authSource=admin"
+
+
+graylog_uid: 1100
+graylog_gid: 1100
+
+graylog_network_name: monitoring
+graylog_database_network_name: backend
+
+
+
+
+
+# -------------------------------------------------------------------
+# Docker
+# -------------------------------------------------------------------
+
+graylog_restart_policy: unless-stopped
+
+graylog_compose_file: "{{ graylog_base_dir }}/docker-compose.yml"
+
+# -------------------------------------------------------------------
+# Graylog
+# -------------------------------------------------------------------
+
+graylog_container_name: graylog
+
+graylog_image: "graylog/graylog:{{ graylog_version }}"
+
+graylog_hostname: graylog
+
+graylog_config_path: "{{ graylog_config_dir }}/graylog.conf"
+
+graylog_data_path: "{{ graylog_data_dir }}/graylog"
+
+graylog_logs_path: "{{ graylog_logs_dir }}/graylog"
+
+# -------------------------------------------------------------------
+# Data Node
+# -------------------------------------------------------------------
+
+graylog_datanode_container_name: graylog-datanode
+
+graylog_datanode_image: "graylog/graylog-datanode:{{ graylog_version }}"
+
+graylog_datanode_hostname: graylog-datanode
+
+graylog_datanode_data_dir: "{{ graylog_data_dir }}/datanode"
+
+graylog_datanode_logs_dir: "{{ graylog_logs_dir }}/datanode"
+
+# -------------------------------------------------------------------
+# Graylog ports
+# -------------------------------------------------------------------
+
+graylog_http_port: 9000
+
+graylog_syslog_udp_port: 1514
+
+graylog_syslog_tcp_port: 1514
+
+graylog_gelf_udp_port: 12201
+
+graylog_gelf_tcp_port: 12201
+
+# -------------------------------------------------------------------
+# Graylog configuration
+# -------------------------------------------------------------------
+
+graylog_http_external_uri: "http://10.0.0.13/" #"https://graylog.example.com/"
+
+
+graylog_root_timezone: "UTC"
+
+graylog_message_journal_max_size: "5gb"
+
+graylog_elasticsearch_max_docs_per_index: 20000000
+
+# -------------------------------------------------------------------
+# Security
+# -------------------------------------------------------------------
+
+# Generate this securely and override it through Ansible Vault.
+graylog_password_secret: "passwordpasswordpassword"
+
+# SHA256 hash of the initial admin password.
+#
+# Generate with:
+#
+# echo -n 'your-password' | sha256sum
+#
+graylog_root_password_sha2: "1bc97520d648ac73a954f8c56610d81f07511070c402b7fa0353b698597212d1"
+
+graylog_root_username: admin
+
+# -------------------------------------------------------------------
+# Persistence
+# -------------------------------------------------------------------
+
+graylog_persist_data: true
+
+graylog_persist_logs: true
+
+graylog_persist_datanode_data: true
+
+graylog_persist_datanode_logs: true
+
+# -------------------------------------------------------------------
+# Service
+# -------------------------------------------------------------------
+
+graylog_service_state: started

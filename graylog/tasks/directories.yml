@@ -1,0 +1,65 @@
+---
+- name: Create Graylog base directory
+  ansible.builtin.file:
+    path: "{{ graylog_base_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create Graylog configuration directory
+  ansible.builtin.file:
+    path: "{{ graylog_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create Graylog data directory
+  ansible.builtin.file:
+    path: "{{ graylog_data_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create Graylog persistent data directory
+  ansible.builtin.file:
+    path: "{{ graylog_data_dir }}/graylog"
+    state: directory
+    owner: "{{ graylog_uid }}"
+    group: "{{ graylog_gid }}"
+    mode: "0755"
+
+- name: Create Graylog logs directory
+  ansible.builtin.file:
+    path: "{{ graylog_logs_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create Graylog persistent logs directory
+  ansible.builtin.file:
+    path: "{{ graylog_logs_dir }}/graylog"
+    state: directory
+    owner: "{{ graylog_uid }}"
+    group: "{{ graylog_gid }}"
+    mode: "0755"
+
+- name: Create Graylog Data Node data directory
+  ansible.builtin.file:
+    path: "{{ graylog_datanode_data_dir }}"
+    state: directory
+    owner: "{{ graylog_uid }}"
+    group: "{{ graylog_gid }}"
+    mode: "0755"
+
+- name: Create Graylog Data Node logs directory
+  ansible.builtin.file:
+    path: "{{ graylog_datanode_logs_dir }}"
+    state: directory
+    owner: "{{ graylog_uid }}"
+    group: "{{ graylog_gid }}"
+    mode: "0755"
+

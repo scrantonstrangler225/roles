@@ -1,0 +1,23 @@
+is_master = true
+
+node_id_file = /usr/share/graylog/config/node-id
+#node_id_file = /usr/share/graylog/data/config/node-id
+
+data_dir = /usr/share/graylog/data
+mongodb_uri = {{ graylog_mongodb_uri }}
+
+password_secret = {{ graylog_password_secret }}
+
+root_username = {{ graylog_root_username }}
+
+root_password_sha2 = {{ graylog_root_password_sha2 }}
+
+http_bind_address = 0.0.0.0:9000
+
+http_publish_uri = {{ graylog_http_external_uri }}
+
+root_timezone = {{ graylog_root_timezone }}
+
+message_journal_max_size = {{ graylog_message_journal_max_size }}
+
+elasticsearch_max_docs_per_index = {{ graylog_elasticsearch_max_docs_per_index }}

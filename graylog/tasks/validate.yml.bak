@@ -1,0 +1,13 @@
+---
+- name: Wait for Graylog HTTP endpoint
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ graylog_http_port }}/"
+    method: GET
+    status_code:
+      - 200
+      - 401
+    validate_certs: false
+  register: graylog_health
+  retries: 20
+  delay: 10
+  until: graylog_health.status in [200, 401]
