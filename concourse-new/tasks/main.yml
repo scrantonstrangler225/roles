@@ -1,0 +1,42 @@
+
+---
+- name: Create Concourse directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - "{{ concourse_root }}"
+    - "{{ concourse_root }}/compose"
+
+- name: Configure Concourse keys
+  ansible.builtin.import_tasks: keys.yml
+
+# ###########################
+# vault AppRole credentials 
+# ###########################
+- name: Read Vault Role ID
+  ansible.builtin.slurp:
+    src: "{{ vault_role_id_file }}"
+  register: concourse_vault_role_id
+
+- name: Read Vault Secret ID
+  ansible.builtin.slurp:
+    src: "{{ vault_secret_id_file }}"
+  register: concourse_vault_secret_id
+
+- name: Set Vault AppRole credentials
+  ansible.builtin.set_fact:
+    vault_role_id: "{{ concourse_vault_role_id.content | b64decode | trim }}"
+    vault_secret_id: "{{ concourse_vault_secret_id.content | b64decode | trim }}"
+
+- name: Configure Concourse Web
+  ansible.builtin.import_tasks: web.yml
+  when: concourse_enable_web | bool
+
+- name: Configure Linux Worker
+  ansible.builtin.import_tasks: worker.yml
+  when: concourse_enable_worker | bool
+

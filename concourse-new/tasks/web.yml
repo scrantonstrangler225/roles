@@ -1,0 +1,64 @@
+
+---
+#########################################################################
+# PostgreSQL environment
+#########################################################################
+
+- name: Deploy PostgreSQL environment
+  ansible.builtin.template:
+    src: db.env.j2
+    dest: "{{ concourse_root }}/compose/db.env"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+
+#########################################################################
+# Vault environment
+#########################################################################
+
+- name: Deploy Concourse Vault environment
+  ansible.builtin.template:
+    src: vault.env.j2
+    dest: "{{ concourse_root }}/compose/vault.env"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+
+#########################################################################
+# Web environment
+#########################################################################
+
+- name: Deploy Concourse Web environment
+  ansible.builtin.template:
+    src: web.env.j2
+    dest: "{{ concourse_root }}/compose/web.env"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+
+#########################################################################
+# Web Compose
+#########################################################################
+
+- name: Deploy Concourse Web Compose file
+  ansible.builtin.template:
+    src: web-compose.yml.j2
+    dest: "{{ concourse_root }}/web-compose.yml"
+    owner: root
+    group: root
+    mode: "0644"
+
+#########################################################################
+# Start Web stack
+#########################################################################
+
+- name: Start Concourse Web stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ concourse_root }}"
+    files:
+      - web-compose.yml
+    state: present
+

@@ -1,0 +1,138 @@
+
+---
+#########################################################################
+# Create key directory
+#########################################################################
+
+- name: Create Concourse keys directory
+  ansible.builtin.file:
+    path: "{{ concourse_keys_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+#########################################################################
+# Generate Web keys
+#########################################################################
+
+- name: Generate Concourse TSA host key
+  ansible.builtin.command:
+    cmd: >
+      ssh-keygen -q
+      -t rsa
+      -b 4096
+      -m PEM
+      -N ""
+      -f {{ concourse_keys_dir }}/tsa_host_key
+    creates: "{{ concourse_keys_dir }}/tsa_host_key"
+
+- name: Generate Concourse session signing key
+  ansible.builtin.command:
+    cmd: >
+      ssh-keygen -q
+      -t rsa
+      -b 4096
+      -m PEM
+      -N ""
+      -f {{ concourse_keys_dir }}/session_signing_key
+    creates: "{{ concourse_keys_dir }}/session_signing_key"
+
+#########################################################################
+# Generate Linux worker key
+#########################################################################
+
+- name: Generate Linux worker key
+  ansible.builtin.command:
+    cmd: >
+      ssh-keygen -q
+      -t rsa
+      -b 4096
+      -m PEM
+      -N ""
+      -f {{ concourse_keys_dir }}/worker_key
+    creates: "{{ concourse_keys_dir }}/worker_key"
+
+#########################################################################
+# Set key permissions
+#########################################################################
+
+- name: Set private key permissions
+  ansible.builtin.file:
+    path: "{{ concourse_keys_dir }}/{{ item }}"
+    owner: root
+    group: root
+    mode: "0600"
+  loop:
+    - tsa_host_key
+    - session_signing_key
+    - worker_key
+
+- name: Set public key permissions
+  ansible.builtin.file:
+    path: "{{ concourse_keys_dir }}/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - tsa_host_key.pub
+    - worker_key.pub
+
+#########################################################################
+# Build authorized worker keys
+#########################################################################
+
+- name: Read Linux worker public key
+  ansible.builtin.slurp:
+    src: "{{ concourse_keys_dir }}/worker_key.pub"
+  register: concourse_linux_worker_public_key
+
+- name: Build authorized worker keys
+  ansible.builtin.copy:
+    dest: "{{ concourse_keys_dir }}/authorized_worker_keys.pub"
+    content: |
+      {{ concourse_linux_worker_public_key.content | b64decode | trim }}
+      {% for worker_key in concourse_additional_worker_public_keys %}
+      {{ worker_key }}
+      {% endfor %}
+    owner: root
+    group: root
+    mode: "0644"
+  register: concourse_authorized_keys_file
+
+#########################################################################
+# Distribute Web keys
+#########################################################################
+
+- name: Copy Web keys into Docker volume
+  ansible.builtin.command:
+    cmd: >
+      docker run --rm
+      -v {{ concourse_web_keys_volume }}:/keys
+      -v {{ concourse_keys_dir }}:/source:ro
+      alpine
+      sh -c
+      "cp /source/session_signing_key /source/tsa_host_key /source/authorized_worker_keys.pub /keys/ &&
+       chmod 600 /keys/session_signing_key /keys/tsa_host_key &&
+       chmod 644 /keys/authorized_worker_keys.pub"
+  register: concourse_web_keys_copy
+  changed_when: true
+
+#########################################################################
+# Distribute Linux worker keys
+#########################################################################
+
+- name: Copy Linux worker keys into Docker volume
+  ansible.builtin.command:
+    cmd: >
+      docker run --rm
+      -v {{ concourse_worker_keys_volume }}:/keys
+      -v {{ concourse_keys_dir }}:/source:ro
+      alpine
+      sh -c
+      "cp /source/tsa_host_key.pub /source/worker_key /keys/ &&
+       chmod 600 /keys/worker_key &&
+       chmod 644 /keys/tsa_host_key.pub"
+  register: concourse_worker_keys_copy
+  changed_when: true
+

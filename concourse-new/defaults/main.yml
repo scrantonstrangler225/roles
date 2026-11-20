@@ -1,0 +1,78 @@
+
+---
+# Docker images
+concourse_version: "7.13.1"
+postgres_version: "17"
+
+# Deployment paths
+concourse_root: /opt/concourse-production
+concourse_keys_dir: "{{ concourse_root }}/keys"
+
+# Database
+concourse_postgres_db: concourse
+concourse_postgres_user: concourse
+concourse_postgres_password: password
+
+# External URL
+concourse_external_url: "http://10.0.0.13:8081"
+
+# Docker networks
+concourse_networks:
+  - backend
+
+# Deployment separation
+concourse_enable_web: true
+concourse_enable_worker: true
+
+# Docker volumes
+concourse_web_keys_volume: concourse_web_keys
+concourse_worker_keys_volume: concourse_worker_keys
+concourse_worker_volume: concourse_worker
+concourse_db_volume: concourse_db_production
+
+concourse_volumes:
+  - "{{ concourse_db_volume }}"
+  - "{{ concourse_web_keys_volume }}"
+  - "{{ concourse_worker_keys_volume }}"
+  - "{{ concourse_worker_volume }}"
+
+# Worker
+concourse_worker_name: worker-1
+
+# Additional authorized worker public keys
+concourse_additional_worker_public_keys: []
+
+# Features
+concourse_enable_pipeline_instances: true
+concourse_enable_across_step: true
+concourse_enable_resource_causality: true
+
+# Secrets
+concourse_client_secret: password
+concourse_tsa_client_secret: password
+
+# Vault
+vault_addr: "http://vault:8200"
+
+vault_role_id_file: "/opt/vault/init/role-id"
+vault_secret_id_file: "/opt/vault/init/secret-id"
+
+concourse_vault_auth_backend: approle
+concourse_vault_path: secret
+
+# Local authentication
+concourse_local_user: admin
+concourse_local_password: password
+
+# Cluster
+concourse_cluster_name: concourse-main
+
+# Network ports
+concourse_tsa_port: 2223
+concourse_web_port: 8081
+
+# Service names
+concourse_web_service: concourse
+concourse_worker_service: concourse-worker
+concourse_db_service: concourse-db
+

@@ -1,0 +1,106 @@
+services:
+
+  concourse-db:
+    image: postgres:{{ postgres_version }}
+    container_name: concourse-db
+    restart: unless-stopped
+
+    env_file:
+      - compose/db.env
+      - compose/web.env
+      - compose/vault.env
+
+    volumes:
+      - concourse_db:/var/lib/postgresql/data
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U {{ concourse_postgres_user }} -d {{ concourse_postgres_db }}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+    networks:
+      - backend
+
+
+  concourse:
+    image: concourse/concourse:{{ concourse_version }}
+    container_name: concourse
+
+    command: web
+
+    restart: unless-stopped
+
+    privileged: true
+    cgroup: host
+
+    depends_on:
+      concourse-db:
+        condition: service_healthy
+
+    env_file:
+      - compose/web.env
+
+    expose:
+      - "2222"
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - concourse_keys:/concourse-keys
+
+    networks:
+      - backend
+      - proxy
+
+
+  concourse-worker:
+    image: concourse/concourse:{{ concourse_version }}
+    container_name: concourse-worker
+
+    command: worker
+
+    restart: unless-stopped
+
+    privileged: true
+    cgroup: host
+
+    depends_on:
+      - concourse
+
+    env_file:
+      - compose/worker.env
+
+    volumes:
+      - concourse_worker:/worker-state
+      - concourse_keys:/concourse-keys
+
+    networks:
+      - backend
+      - proxy
+
+
+volumes:
+
+  concourse_db:
+    external: true
+
+  concourse_keys:
+    external: true
+
+  concourse_worker:
+    external: true
+
+
+networks:
+
+  backend:
+    external: true
+
+  proxy:
+    external: true

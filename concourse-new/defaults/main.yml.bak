@@ -1,0 +1,40 @@
+---
+#credhub_password: password
+concourse_local_user: admin
+concourse_local_password: password
+#tsa_client_secret: password
+#web_client_secret: password
+
+
+concourse_dir: /opt/concourse
+
+concourse_version: latest
+postgres_version: "17"
+
+concourse_external_url: "http://localhost:8080"
+
+concourse_admin_user: admin
+concourse_admin_password: password
+
+concourse_postgres_db: concourse
+concourse_postgres_user: concourse
+concourse_postgres_password: password
+
+concourse_client_secret: password
+concourse_tsa_client_secret: password
+
+concourse_cluster_name: homelab
+
+concourse_enable_pipeline_instances: true
+concourse_enable_across_step: true
+concourse_enable_resource_causality: true
+
+
+# CredHub
+credhub_version: latest
+
+credhub_postgres_db: credhub
+credhub_postgres_user: credhub
+credhub_postgres_password: password
+
+credhub_encryption_password: password

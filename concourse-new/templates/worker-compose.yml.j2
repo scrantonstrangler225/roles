@@ -1,0 +1,38 @@
+
+services:
+
+  concourse-worker:
+    image: concourse/concourse:{{ concourse_version }}
+    container_name: concourse-worker-production
+
+    command: worker
+    restart: unless-stopped
+
+    privileged: true
+    cgroup: host
+
+    env_file:
+      - compose/worker.env
+
+    volumes:
+      - concourse_worker:/worker-state
+      - concourse_worker_keys:/concourse-keys:ro
+
+    networks:
+      - backend
+
+volumes:
+
+  concourse_worker:
+    external: true
+    name: {{ concourse_worker_volume }}
+
+  concourse_worker_keys:
+    external: true
+    name: {{ concourse_worker_keys_volume }}
+
+networks:
+
+  backend:
+    external: true
+

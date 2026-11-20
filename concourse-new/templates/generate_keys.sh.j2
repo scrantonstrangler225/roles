@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+KEY_DIR="{{ concourse_root }}/keys"
+
+mkdir -p "${KEY_DIR}"
+
+cd "${KEY_DIR}"
+
+if [ ! -f tsa_host_key ]; then
+    ssh-keygen \
+      -t rsa \
+      -b 4096 \
+      -m PEM \
+      -N "" \
+      -f tsa_host_key
+fi
+
+
+if [ ! -f worker_key ]; then
+    ssh-keygen \
+      -t rsa \
+      -b 4096 \
+      -m PEM \
+      -N "" \
+      -f worker_key
+fi
+
+
+if [ ! -f session_signing_key ]; then
+    ssh-keygen \
+      -t rsa \
+      -b 4096 \
+      -m PEM \
+      -N "" \
+      -f session_signing_key
+fi
+
+
+chmod 600 *

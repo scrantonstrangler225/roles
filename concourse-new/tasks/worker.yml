@@ -1,0 +1,37 @@
+
+---
+#########################################################################
+# Worker environment
+#########################################################################
+
+- name: Deploy Concourse Worker environment
+  ansible.builtin.template:
+    src: worker.env.j2
+    dest: "{{ concourse_root }}/compose/worker.env"
+    owner: root
+    group: root
+    mode: "0600"
+
+#########################################################################
+# Worker Compose
+#########################################################################
+
+- name: Deploy Concourse Worker Compose file
+  ansible.builtin.template:
+    src: worker-compose.yml.j2
+    dest: "{{ concourse_root }}/worker-compose.yml"
+    owner: root
+    group: root
+    mode: "0644"
+
+#########################################################################
+# Start Linux worker
+#########################################################################
+
+- name: Start Concourse Linux Worker
+  community.docker.docker_compose_v2:
+    project_src: "{{ concourse_root }}"
+    files:
+      - worker-compose.yml
+    state: present
+
