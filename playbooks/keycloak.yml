@@ -1,6 +1,0 @@
-- name: Keycloak Image
-  hosts: all
-  become: true
-
-  roles:
-    - keycloak

@@ -1,6 +1,0 @@
-- name: CAdvisor Image
-  hosts: all
-  become: true
-
-  roles:
-    - cadvisor

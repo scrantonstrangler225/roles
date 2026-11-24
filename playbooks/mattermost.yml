@@ -1,6 +1,0 @@
-- name: Mattermost Image
-  hosts: all
-  become: true
-
-  roles:
-    - mattermost

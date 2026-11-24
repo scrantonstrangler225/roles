@@ -1,9 +1,0 @@
-- name: Monitoring Image
-  hosts: all
-  become: true
-
-  roles:
-    - prometheus
-    - grafana
-    - node_exporter
-    - cadvisor
