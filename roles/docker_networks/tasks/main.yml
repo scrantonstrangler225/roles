@@ -1,8 +1,0 @@
----
-- name: Ensure Docker networks exist
-  community.docker.docker_network:
-    name: "{{ item.name }}"
-    driver: "{{ item.driver | default('bridge') }}"
-    ipam_config: "{{ item.ipam_config | default(omit) }}"
-    state: present
-  loop: "{{ docker_networks }}"

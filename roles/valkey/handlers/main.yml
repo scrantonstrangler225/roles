@@ -1,5 +1,0 @@
----
-- name: Restart Valkey
-  community.docker.docker_container:
-    name: "{{ valkey_container_name }}"
-    restart: true

@@ -1,5 +1,0 @@
----
-- name: Restart MongoDB
-  community.docker.docker_container:
-    name: "{{ mongodb_container_name }}"
-    restart: true

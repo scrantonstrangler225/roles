@@ -1,5 +1,0 @@
----
-- name: Reload nginx container
-  community.docker.docker_container:
-    name: nginx
-    restart: true
