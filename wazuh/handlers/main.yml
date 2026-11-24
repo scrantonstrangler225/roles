@@ -1,7 +1,0 @@
----
-- name: Restart Wazuh 
-  community.docker.docker_compose_v2:
-    project_src: "{{ wazuh_base_dir }}"
-    project_name: "{{ wazuh_project_name }}"
-    state: present
-    recreate: always
